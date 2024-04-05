@@ -4,3 +4,12 @@ export type User = {
   firstName?: string
   lastName?: string
 }
+
+export type Session = {
+  user?: {
+    accessToken: string
+    id: string
+    name: string
+    email: string
+  }
+}

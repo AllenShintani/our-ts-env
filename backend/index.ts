@@ -6,7 +6,7 @@ import type { FastifyOAuth2Options } from '@fastify/oauth2'
 import fastifyOAuth2 from '@fastify/oauth2'
 import fastifyCookie from '@fastify/cookie'
 import fastifySession from '@fastify/session'
-import type { User } from './types/User'
+import type { Session, User } from './types/User'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -126,13 +126,13 @@ server.get(
     const token =
       await server.googleOAuth2.getAccessTokenFromAuthorizationCodeFlow(request)
     const userInfo = getUserInfo(token.access_token)
-    ;(request.session as any).user = userInfo
+    ;(request.session as Session).user = userInfo
     reply.redirect('/')
   }
 )
 
 server.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
-  const user = (request.session as any).user
+  const user = (request.session as Session).user
 
   if (user) {
     reply.send(`Welcome, ${user.name}!`)
