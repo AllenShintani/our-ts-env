@@ -21,8 +21,8 @@ const GoogleLogin: React.FC = () => {
   const fetchUserInfo = async () => {
     try {
       // ユーザー情報を取得するAPIエンドポイントを呼び出します
-      const response = await axios.get('http://localhost:8080/user')
-      const userInfo = response.data
+      // const response = await axios.get('http://localhost:8080/user')
+      // const userInfo = response.data
       // 取得したユーザー情報を表示するなどの処理を行います
     } catch (error) {
       console.error('ユーザー情報取得エラー:', error)

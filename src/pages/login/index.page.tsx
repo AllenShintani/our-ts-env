@@ -15,8 +15,8 @@ import 'firebase/compat/auth'
 import dotenv from 'dotenv'
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client'
 import type { AppRouter } from 'backend/src/routers'
-import type { UserLoginSchema } from 'backend/src/schemas/userSchemas'
 import router from 'next/router'
+import type { LoginInput } from 'backend/src/schemas/userSchemas'
 
 dotenv.config()
 const theme = createTheme()
@@ -35,7 +35,7 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
   //----------formのデータを取り出す
   const formData = new FormData(e.currentTarget)
 
-  const loginData: UserLoginSchema = {
+  const loginData: LoginInput = {
     email: formData.get('email')?.toString() || '',
     password: formData.get('password')?.toString() || '',
   }
