@@ -11,61 +11,67 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import type { FormEvent } from 'react'
-import axios from 'axios'
-import Router from 'next/router'
 import 'firebase/compat/auth'
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from 'backend/components/lib/firebase/firebase'
 import dotenv from 'dotenv'
+import { createTRPCProxyClient, httpBatchLink } from '@trpc/client'
+import type { AppRouter } from 'backend/src/routers'
+import type { UserLoginSchema } from 'backend/src/schemas/userSchemas'
+import router from 'next/router'
 
 dotenv.config()
 const theme = createTheme()
 const API_HOST = `${process.env.NEXT_PUBLIC_API_HOST}`
-const router = Router
 
-const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+const trpc = createTRPCProxyClient<AppRouter>({
+  links: [
+    httpBatchLink({
+      url: `${API_HOST}/trpc`,
+    }),
+  ],
+})
+
+const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
   e.preventDefault()
   //----------formのデータを取り出す
   const formData = new FormData(e.currentTarget)
-  const email =
-    (formData.get('email') && formData.get('email')?.toString()) || ''
-  const password =
-    (formData.get('password') && formData.get('password')?.toString()) || ''
 
-  const userData = {
-    email: email,
-    password: password,
+  const loginData: UserLoginSchema = {
+    email: formData.get('email')?.toString() || '',
+    password: formData.get('password')?.toString() || '',
   }
+
   //--------user情報をserverに送信
-  const sendToServer = () => {
-    axios
-      .post(`${API_HOST}/signup`, userData)
-      .then(async () => {
-        router.push('/')
-      })
-      .catch((err) => {
-        console.error(err)
-      })
-  }
-  const authenticate = async (email: string, password: string) => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      )
-      const user = userCredential.user
-      const token = await user.getIdToken()
-      localStorage.setItem('token', token)
-      router.push('/')
-    } catch (error) {
-      console.error('Authentication error:', error)
-    }
-  }
-  authenticate(userData.email, userData.password)
-  sendToServer()
-}
+  try {
+    const response = await trpc.login.mutate({
+      loginData: loginData,
+    })
+    if (response) router.push('/')
 
+    // axios
+    //   .post(`${API_HOST}/signup`, userData)
+    //   .then(() => {
+    //     router.push('/')
+    //   })
+    //   .catch((err) => {
+    //     console.error(err)
+    //   })
+
+    // const authenticate = async (email: string, password: string) => {
+    //   try {
+    //     const user = (await signInWithEmailAndPassword(auth, email, password))
+    //       .user
+    //     const token = await user.getIdToken()
+    //     localStorage.setItem('token', token)
+    //     router.push('/')
+    //   } catch (error) {
+    //     console.error('Authentication error:', error)
+    //   }
+    // }
+    // authenticate(userData.email, userData.password)
+  } catch (error) {
+    console.error(error)
+  }
+}
 export default function SignIn() {
   return (
     <ThemeProvider theme={theme}>

@@ -11,58 +11,43 @@ import Typography from '@mui/material/Typography'
 import Container from '@mui/material/Container'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import type { FormEvent } from 'react'
-import axios from 'axios'
-import Router from 'next/router'
-import firebase from '@firebase/app-compat'
 import 'firebase/compat/auth'
-import {
-  createUserWithEmailAndPassword,
-  getAuth,
-  getIdToken,
-  sendEmailVerification,
-} from '@firebase/auth'
-import { auth } from 'backend/components/lib/firebase/firebase'
-import type { User } from 'backend/types/User'
-const API_HOST = `${process.env.NEXT_PUBLIC_API_HOST}`
+import { createTRPCProxyClient, httpBatchLink } from '@trpc/client'
+import type { AppRouter } from 'backend/src/routers'
+import { userSchema } from '@/shemas'
+import router from 'next/router'
+
 const theme = createTheme()
-const router = Router
+const API_HOST = `${process.env.NEXT_PUBLIC_API_HOST}`
+
+// tRPCクライアントの作成
+const trpc = createTRPCProxyClient<AppRouter>({
+  links: [
+    httpBatchLink({
+      url: `${API_HOST}/trpc`,
+    }),
+  ],
+})
 
 const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
   e.preventDefault()
   const formData = new FormData(e.currentTarget)
 
-  const userData: User = {
-    email: formData.get('email')?.toString() || ``,
-    password: formData.get('password')?.toString() || ``,
-    firstName: formData.get('lastName')?.toString(),
-    lastName: formData.get('firstName')?.toString(),
-  }
+  const userData = userSchema.parse({
+    email: formData.get('email')?.toString() || '',
+    password: formData.get('password')?.toString() || '',
+    firstName: formData.get('firstName')?.toString(),
+    lastName: formData.get('lastName')?.toString(),
+  })
 
   try {
-    // ユーザーを登録
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      userData['email'] as string,
-      userData['password'] as string,
-    )
-
-    // トークンを取得
-    const user = userCredential.user
-    const idToken = await getIdToken(user)
-
-    // バックエンドにトークンとユーザー情報を送信
-    const response = await axios.post(`${API_HOST}/signup`, {
-      token: idToken,
-      userData: userData,
+    const response = await trpc.signup.mutate({
+      userData,
     })
-
-    if (response.status === 200) {
-      router.push('/')
-    } else {
-      console.error('ユーザー登録に失敗しました')
-    }
+    //後でthenに変更する
+    if (response) router.push('/')
   } catch (error) {
-    console.error('エラーが発生しました', error)
+    console.error(error)
   }
 }
 

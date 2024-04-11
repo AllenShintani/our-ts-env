@@ -4,7 +4,7 @@
     "noImplicitAny": true,
     "target": "ES6",
     "module": "commonjs",
-    "rootDir": "./",
+    "rootDir": "../",
     "esModuleInterop": true,
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
