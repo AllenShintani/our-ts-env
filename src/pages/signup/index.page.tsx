@@ -25,10 +25,15 @@ const trpc = createTRPCProxyClient<AppRouter>({
   links: [
     httpBatchLink({
       url: `${API_HOST}/trpc`,
+      fetch: (url, options) => {
+        return fetch(url, {
+          ...options,
+          credentials: 'include', //これ設定しないとcookieが送信されてもsetされない
+        })
+      },
     }),
   ],
 })
-
 const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
   e.preventDefault()
   const formData = new FormData(e.currentTarget)
@@ -41,16 +46,12 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
   })
 
   try {
-    const response = await trpc.signup.mutate({
-      userData,
-    })
-    //後でthenに変更する
-    if (response) router.push('/')
+    const { userUuid } = await trpc.signup.mutate({ userData })
+    router.push(`/home/${userUuid}`)
   } catch (error) {
     console.error(error)
   }
 }
-
 export default function SignUp() {
   return (
     <ThemeProvider theme={theme}>

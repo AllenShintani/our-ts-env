@@ -26,6 +26,12 @@ const trpc = createTRPCProxyClient<AppRouter>({
   links: [
     httpBatchLink({
       url: `${API_HOST}/trpc`,
+      fetch: (url, options) => {
+        return fetch(url, {
+          ...options,
+          credentials: 'include',
+        })
+      },
     }),
   ],
 })
@@ -42,32 +48,8 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 
   //--------user情報をserverに送信
   try {
-    const response = await trpc.login.mutate({
-      loginData: loginData,
-    })
-    if (response) router.push('/')
-
-    // axios
-    //   .post(`${API_HOST}/signup`, userData)
-    //   .then(() => {
-    //     router.push('/')
-    //   })
-    //   .catch((err) => {
-    //     console.error(err)
-    //   })
-
-    // const authenticate = async (email: string, password: string) => {
-    //   try {
-    //     const user = (await signInWithEmailAndPassword(auth, email, password))
-    //       .user
-    //     const token = await user.getIdToken()
-    //     localStorage.setItem('token', token)
-    //     router.push('/')
-    //   } catch (error) {
-    //     console.error('Authentication error:', error)
-    //   }
-    // }
-    // authenticate(userData.email, userData.password)
+    const userUuid = await trpc.login.mutate({ loginData })
+    router.push(`/home/${userUuid}`)
   } catch (error) {
     console.error(error)
   }

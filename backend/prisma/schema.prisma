@@ -14,9 +14,9 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
+  id    String     @id @default(uuid())
+  firebaseUid String @unique @db.VarChar(255)
   email String  @unique
-  hashedPassword String 
   firstName  String?
   lastName  String?
   fullName  String?

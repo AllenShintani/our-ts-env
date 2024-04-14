@@ -1,5 +1,5 @@
 {
-  "name": "next-ts-env3",
+  "name": "our-ts-env",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -22,6 +22,7 @@
     "@trpc/react-query": "^10.45.2",
     "@trpc/server": "^10.45.2",
     "axios": "^1.6.8",
+    "cookies-next": "^4.1.1",
     "firebase": "^10.10.0",
     "framer-motion": "^11.0.20",
     "next": "14.1.4",
@@ -29,14 +30,14 @@
     "react-dom": "18.2.0",
     "react-hooks": "^1.0.1",
     "react-query": "^3.39.3",
-    "styled-components": "^5.3.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.67",
-    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.1.4",
