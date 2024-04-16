@@ -145,7 +145,7 @@ export default function SignIn() {
               justifyContent="flex-end"
             >
               <Grid item>
-                <a href="/rooting/signup">まだアカウントをお持ちでない方</a>
+                <a href="/signup">まだアカウントをお持ちでない方</a>
               </Grid>
             </Grid>
           </Box>

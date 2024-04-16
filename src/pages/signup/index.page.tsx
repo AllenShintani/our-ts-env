@@ -28,7 +28,7 @@ const trpc = createTRPCProxyClient<AppRouter>({
       fetch: (url, options) => {
         return fetch(url, {
           ...options,
-          credentials: 'include', //これ設定しないとcookieが送信されてもsetされない
+          credentials: 'include', //これ設定しないとcookieが送信されてもsetされない。バックエンドもだっけ？
         })
       },
     }),
@@ -173,7 +173,7 @@ export default function SignUp() {
               justifyContent="flex-end"
             >
               <Grid item>
-                <a href="/rooting/Signin">既にアカウントをお持ちの方</a>
+                <a href="/login">既にアカウントをお持ちの方</a>
               </Grid>
             </Grid>
           </Box>
